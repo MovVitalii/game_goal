@@ -59,6 +59,7 @@ html, body {
   font-size: clamp(13px, 2.5vw, 16px);
   border: none;
   border-radius: 8px;
+  touch-action: manipulation;
 }
 
 #startBtn { background-color: green; color: white; }

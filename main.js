@@ -22,8 +22,15 @@ const rightHand = document.querySelector(".right-hand img");
 const scoreLeftEl = document.getElementById("scoreLeft");
 const scoreRightEl = document.getElementById("scoreRight");
 
-document.getElementById("startBtn").onclick = () => gameRunning = true;
-document.getElementById("stopBtn").onclick = () => gameRunning = false;
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+
+startBtn.onclick = () => gameRunning = true;
+stopBtn.onclick = () => gameRunning = false;
+
+// dotyk na przyciskach (telefon) — natychmiastowa reakcja, bez czekania na "click"
+startBtn.addEventListener("touchend", (e) => { e.preventDefault(); gameRunning = true; });
+stopBtn.addEventListener("touchend", (e) => { e.preventDefault(); gameRunning = false; });
 
 // ✅ klawiatura (desktop) — krok zmniejszony o połowę
 window.addEventListener("keydown", (e) => {
@@ -38,6 +45,9 @@ window.addEventListener("keydown", (e) => {
 // lewa połowa ekranu = gracz lewy, prawa połowa = gracz prawy
 // pozycja paska = tam, gdzie dotknięto (obsługa wielu dotknięć naraz)
 function handleTouch(e) {
+  // nie blokuj dotyku na przyciskach Start/Stop
+  if (e.target.closest && e.target.closest(".controls")) return;
+
   e.preventDefault();
   const rect = gameEl.getBoundingClientRect();
 
