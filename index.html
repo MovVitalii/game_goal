@@ -2,6 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Office Game</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -10,8 +11,10 @@
 
 <div id="game">
 
-<button id="startBtn">Start</button>
-<button id="stopBtn">Stop</button>
+<div class="controls">
+  <button id="startBtn">Start</button>
+  <button id="stopBtn">Stop</button>
+</div>
 
 <div id="leftPlayer" class="player left">
   <div class="hand left-hand">
@@ -31,7 +34,7 @@
 
 <div id="paper">Moje cele</div>
 
-<div id="info">Lewy: W/S | Prawy: ↑ ↓</div>
+<div id="info">W/S, ↑↓ albo dotyk: lewa/prawa strona</div>
 
 <div id="score">
   Ag: <span id="scoreLeft">0</span> |

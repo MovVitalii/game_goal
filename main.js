@@ -4,13 +4,14 @@ let rightY = 50;
 let scoreLeft = 0;
 let scoreRight = 0;
 
-let paper = { x: 50, y: 50, vx: 0.25, vy: 0.18 };
+// prędkość zmniejszona o połowę
+let paper = { x: 50, y: 50, vx: 0.125, vy: 0.09 };
 
 let gameRunning = false;
 
-// ✅ NOWY cooldown
 let collisionCooldown = 0;
 
+const gameEl = document.getElementById("game");
 const leftEl = document.getElementById("leftPlayer");
 const rightEl = document.getElementById("rightPlayer");
 const paperEl = document.getElementById("paper");
@@ -24,13 +25,37 @@ const scoreRightEl = document.getElementById("scoreRight");
 document.getElementById("startBtn").onclick = () => gameRunning = true;
 document.getElementById("stopBtn").onclick = () => gameRunning = false;
 
+// ✅ klawiatura (desktop) — krok zmniejszony o połowę
 window.addEventListener("keydown", (e) => {
-  if (e.key === "w") leftY = Math.max(0, leftY - 5);
-  if (e.key === "s") leftY = Math.min(90, leftY + 5);
+  if (e.key === "w" || e.key === "W") leftY = Math.max(0, leftY - 2.5);
+  if (e.key === "s" || e.key === "S") leftY = Math.min(90, leftY + 2.5);
 
-  if (e.key === "ArrowUp") rightY = Math.max(0, rightY - 5);
-  if (e.key === "ArrowDown") rightY = Math.min(90, rightY + 5);
+  if (e.key === "ArrowUp") rightY = Math.max(0, rightY - 2.5);
+  if (e.key === "ArrowDown") rightY = Math.min(90, rightY + 2.5);
 });
+
+// ✅ dotyk (telefon — Android i iOS)
+// lewa połowa ekranu = gracz lewy, prawa połowa = gracz prawy
+// pozycja paska = tam, gdzie dotknięto (obsługa wielu dotknięć naraz)
+function handleTouch(e) {
+  e.preventDefault();
+  const rect = gameEl.getBoundingClientRect();
+
+  for (const touch of e.touches) {
+    const relX = touch.clientX - rect.left;
+    const relY = touch.clientY - rect.top;
+    const percentY = Math.max(0, Math.min(90, (relY / rect.height) * 100));
+
+    if (relX < rect.width / 2) {
+      leftY = percentY;
+    } else {
+      rightY = percentY;
+    }
+  }
+}
+
+gameEl.addEventListener("touchstart", handleTouch, { passive: false });
+gameEl.addEventListener("touchmove", handleTouch, { passive: false });
 
 function hitAnimation(handEl) {
   handEl.classList.add("hit");
@@ -41,10 +66,11 @@ function resetBall(direction) {
   paper.x = 50;
   paper.y = 50;
 
-  paper.vx = 0.25 * direction;
-  paper.vy = (Math.random() - 0.5) * 0.4;
+  // prędkość zmniejszona o połowę
+  paper.vx = 0.125 * direction;
+  paper.vy = (Math.random() - 0.5) * 0.2;
 
-  collisionCooldown = 20; // 🔥 żeby nie odbiło od razu po respawnie
+  collisionCooldown = 20;
 }
 
 function update() {
@@ -72,14 +98,13 @@ function update() {
 
   render();
 
-  // ✅ zmniejszamy cooldown
   if (collisionCooldown > 0) collisionCooldown--;
 
   const paperRect = paperEl.getBoundingClientRect();
   const leftRect = leftEl.getBoundingClientRect();
   const rightRect = rightEl.getBoundingClientRect();
 
-  // ✅ LEWY
+  // LEWY
   if (
     collisionCooldown === 0 &&
     paperRect.left <= leftRect.right &&
@@ -87,13 +112,13 @@ function update() {
     paperRect.top <= leftRect.bottom
   ) {
     paper.vx = Math.abs(paper.vx);
-    paper.x += 0.3; // ✅ mniejszy "push"
+    paper.x += 0.3;
     collisionCooldown = 10;
 
     hitAnimation(leftHand);
   }
 
-  // ✅ PRAWY
+  // PRAWY
   if (
     collisionCooldown === 0 &&
     paperRect.right >= rightRect.left &&
